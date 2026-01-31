@@ -1,60 +1,226 @@
 # DeSilo Core
 
-**Generic Startup Intelligence Engine**
+**Open Source Startup Intelligence Engine**
 
-This is the open-source core of the DeSilo platform. It provides the foundational infrastructure for building AI-powered startup intelligence systems.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+DeSilo Core is the open-source foundation for building AI-powered startup intelligence platforms. It provides generic, reusable infrastructure that can be customized for any accelerator, incubator, or startup support organization.
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      YOUR WHITE LABEL                        │
+│              (implements contracts, adds branding)           │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            │ imports
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       DESILO CORE                            │
+│                                                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │  Contracts  │  │   Agents    │  │   Memory    │          │
+│  │  (ABCs)     │  │  (CrewAI)   │  │  (Collab)   │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
+│                                                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │  Adapters   │  │   Config    │  │     UI      │          │
+│  │  (Search)   │  │  (Schema)   │  │ (Themeable) │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
 
 ## What's Included
 
-- **Contracts**: Interface definitions (Python ABCs) that white-label implementations must follow
-- **Agents**: Generic CrewAI agent patterns for market research, topic analysis, etc.
-- **Adapters**: Pluggable adapters for search, LLMs, storage, etc.
-- **Memory**: Collaborative memory systems for AI-human interaction
-- **UI Components**: Themeable React components (no branding)
-- **Config**: Generic configuration schemas
+### Contracts (`core/contracts/`)
+Interface definitions that white-label implementations must follow:
+
+| Contract | Purpose |
+|----------|---------|
+| `AgentPersona` | Define conversational AI personalities |
+| `SearchAdapter` | Plug in search sources (web, LinkedIn, etc.) |
+| `ResourceConnector` | Connect to regional resource databases |
+| `KnowledgeBase` | Integrate proprietary knowledge |
+| `TenantConfig` | Multi-tenant configuration schema |
+
+### Agents (`core/agents/`)
+Generic CrewAI patterns for startup intelligence:
+
+- **BaseResearchCrew** - Foundation for research agent teams
+- **SimpleMarketCrew** - 4-agent market analysis pattern
+
+### Memory (`core/memory/`)
+- **CollaborativeMemory** - AI-human interaction memory system
+
+### Config (`config/`)
+- **industries.yaml** - Generic industry taxonomy (50+ industries)
+
+---
 
 ## What's NOT Included
 
-This core does NOT contain:
-- Partner-specific personas
-- Regional data (partner-specific resource databases)
+This core intentionally excludes:
+
+- Partner-specific personas (e.g., "Sarah Martinez")
+- Regional data (e.g., "Peoria resources")
 - Proprietary knowledge bases
-- Partner branding
+- Partner branding and logos
+- Deployment configurations
 
-Those belong in white-label implementations that import from this core.
+These belong in your white-label implementation.
 
-## Usage
+---
+
+## Quick Start
+
+### Installation
+
+```bash
+# Clone the repo
+git clone https://github.com/thecuriousnobody/desilo-core.git
+cd desilo-core
+
+# Install dependencies
+pip install -e .
+```
+
+### Basic Usage
 
 ```python
 from desilo_core.contracts import AgentPersona, SearchAdapter
 from desilo_core.agents import BaseResearchCrew
 from desilo_core.memory import CollaborativeMemory
 
-# Implement the contracts for your organization
+# 1. Implement the contracts for your organization
 class MyPersona(AgentPersona):
     def get_backstory(self) -> str:
-        return "Your custom persona backstory..."
+        return "I'm an AI assistant for [Your Accelerator]..."
 
-# Use the generic infrastructure
-crew = BaseResearchCrew(persona=MyPersona())
+    def get_opening_message(self) -> str:
+        return "Welcome! How can I help your startup today?"
+
+    def get_conversation_style(self) -> dict:
+        return {"tone": "professional", "verbosity": "concise"}
+
+# 2. Use the generic infrastructure
+memory = CollaborativeMemory()
+crew = BaseResearchCrew(persona=MyPersona(), memory=memory)
+
+# 3. Run research
+results = await crew.research("AI healthcare startups in Austin")
 ```
+
+---
 
 ## The Austin Test
 
-Every file in this repository passes the "Austin Test":
+Every file in this repository passes the **Austin Test**:
 
 > If someone at a random accelerator in Austin, Texas could use this module with zero modification, it belongs here.
 
-## Contributing
-
-Before adding any file, run:
+Before contributing, run:
 ```bash
-# Replace with your organization's proprietary terms
-grep -E "YourOrgName|YourCity|YourPersona" <file>
+grep -rE "Distillery|Peoria|Sarah|Central Illinois" .
 ```
 
-**Zero matches required.**
+**Zero matches required** for any PR to be accepted.
+
+---
+
+## Project Structure
+
+```
+desilo-core/
+├── core/
+│   ├── contracts/           # Interface definitions (ABCs)
+│   │   ├── agent.py         # AgentPersona contract
+│   │   ├── search.py        # SearchAdapter contract
+│   │   ├── resources.py     # ResourceConnector contract
+│   │   ├── knowledge.py     # KnowledgeBase contract
+│   │   └── tenant.py        # TenantConfig schema
+│   │
+│   ├── agents/              # Generic CrewAI patterns
+│   │   ├── base_research_crew.py
+│   │   └── simple_market_crew.py
+│   │
+│   ├── memory/              # Memory systems
+│   │   └── collaborative_memory.py
+│   │
+│   ├── adapters/            # Built-in adapters (coming soon)
+│   │   └── serper_search.py
+│   │
+│   └── api/                 # FastAPI framework (coming soon)
+│
+├── config/
+│   └── industries.yaml      # Generic industry taxonomy
+│
+├── ui/                      # React components (coming soon)
+│
+└── README.md
+```
+
+---
+
+## Roadmap
+
+### Phase 1: Foundation (Current)
+- [x] Contract definitions
+- [x] Base research crew
+- [x] Collaborative memory
+- [x] Industry taxonomy
+
+### Phase 2: Infrastructure
+- [ ] Generic FastAPI application
+- [ ] Search adapter implementations
+- [ ] MCP server base
+- [ ] Themeable React components
+
+### Phase 3: Multi-Tenancy
+- [ ] Tenant middleware
+- [ ] Database schema with tenant isolation
+- [ ] Configuration system
+
+---
+
+## White Label Implementations
+
+Organizations using DeSilo Core:
+
+| Organization | Repository | Region |
+|--------------|------------|--------|
+| Distillery Labs | [desilo-distillery](https://github.com/thecuriousnobody/desilo-distillery) | Central Illinois |
+| *Your org here* | - | - |
+
+---
+
+## Contributing
+
+We welcome contributions! Please ensure:
+
+1. Code passes the Austin Test (no proprietary references)
+2. Contracts are stable (breaking changes require discussion)
+3. Tests are included for new functionality
+4. Documentation is updated
+
+---
 
 ## License
 
-MIT (or Apache 2.0 - TBD)
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+## Related Projects
+
+- [desilo-distillery](https://github.com/thecuriousnobody/desilo-distillery) - White label implementation for Distillery Labs
+- [CrewAI](https://github.com/joaomdmoura/crewAI) - Multi-agent orchestration framework
+- [Mem0](https://github.com/mem0ai/mem0) - Memory layer for AI applications
+
+---
+
+*Built for the global startup ecosystem*
