@@ -1,0 +1,69 @@
+industries:
+  technology:
+    keywords: ["tech", "software", "app", "ai", "artificial intelligence", "machine learning", "ml", "data", "saas", "platform", "blockchain", "crypto", "cryptocurrency", "cybersecurity", "cloud", "devops", "analytics", "big data", "iot", "internet of things", "vr", "virtual reality", "ar", "augmented reality", "gaming", "mobile", "web", "enterprise", "crm", "erp", "automation", "robotics", "computer vision", "nlp", "natural language", "quantum", "edge computing", "5g", "api", "database", "testing", "qa", "digital twins", "metaverse", "no-code", "low-code", "developer tools", "open source", "embedded", "firmware", "hardware"]
+    
+  fintech:
+    keywords: ["fintech", "financial", "banking", "payments", "crypto", "cryptocurrency", "bitcoin", "digital banking", "payment processing", "robo-advisor", "insurtech", "regtech", "personal finance", "lending", "crowdfunding", "investment", "credit", "fraud detection", "digital wallet", "remittance", "money transfer", "wealth management", "tax", "accounting", "financial planning", "microfinance", "peer-to-peer lending", "p2p", "alternative credit", "capital markets", "risk management", "compliance", "pension", "estate planning"]
+    
+  healthcare:
+    keywords: ["health", "medical", "healthcare", "telemedicine", "telehealth", "digital therapeutics", "medical device", "biotech", "pharmaceutical", "pharma", "health analytics", "ehr", "electronic health records", "medical imaging", "surgical", "mental health", "fitness", "wellness", "nutrition", "genomics", "personalized medicine", "clinical trials", "medical ai", "diagnostics", "patient engagement", "medical education", "rehabilitation", "elderly care", "pediatric", "women's health", "dental", "vision", "eye care", "hearing", "sleep", "chronic disease", "emergency medicine", "laboratory", "medical supply"]
+    
+  ecommerce:
+    keywords: ["ecommerce", "e-commerce", "retail", "marketplace", "online store", "direct-to-consumer", "d2c", "subscription", "social commerce", "mobile commerce", "b2b commerce", "dropshipping", "print-on-demand", "fashion", "apparel", "beauty", "cosmetics", "electronics", "gadgets", "home", "garden", "sports", "outdoor", "luxury", "handmade", "artisan", "vintage", "second-hand", "automotive parts", "books", "media", "jewelry", "accessories", "pet products", "baby", "kids", "art", "collectibles", "industrial supplies", "office supplies", "educational materials", "musical instruments"]
+    
+  food:
+    keywords: ["food", "beverage", "restaurant", "delivery", "meal kit", "ghost kitchen", "food production", "beverage manufacturing", "alternative protein", "plant-based", "cultured meat", "lab-grown", "functional food", "supplements", "nutraceuticals", "organic", "keto", "vegan", "food safety", "supply chain", "agriculture", "agtech", "smart packaging", "food waste", "restaurant management", "pos", "point-of-sale", "inventory", "recipe", "catering", "food truck", "vending", "brewery", "distillery", "coffee", "snack", "frozen", "condiments", "sauce", "milkshake"]
+    
+  transportation:
+    keywords: ["transportation", "mobility", "electric vehicle", "ev", "autonomous", "self-driving", "ride-sharing", "rideshare", "micro-mobility", "scooter", "bike", "logistics", "delivery", "fleet management", "public transport", "aviation", "maritime", "space", "traffic", "parking", "fuel", "vehicle maintenance", "car sharing", "freight", "shipping", "last-mile", "drone delivery", "hyperloop", "rail", "smart infrastructure", "navigation", "vehicle safety", "automotive", "connected cars", "charging", "alternative fuels", "supply chain"]
+    
+  realestate:
+    keywords: ["real estate", "proptech", "property", "construction", "smart building", "home automation", "rental", "commercial real estate", "property management", "property investment", "facility management", "architecture", "bim", "building information", "sustainable construction", "modular", "prefab", "construction equipment", "project management", "safety", "building materials", "interior design", "landscaping", "home security", "energy management", "hvac", "plumbing", "electrical", "renovation", "remodeling", "home inspection", "moving"]
+    
+  energy:
+    keywords: ["energy", "renewable", "solar", "wind", "battery", "energy storage", "smart grid", "carbon capture", "environmental", "waste management", "recycling", "water", "air quality", "climate", "sustainability", "green building", "electric grid", "energy trading", "oil", "gas", "nuclear", "hydroelectric", "geothermal", "biofuel", "energy efficiency", "pollution control", "conservation", "weather", "disaster management"]
+    
+  education:
+    keywords: ["education", "edtech", "learning", "training", "educational", "school", "university", "online learning", "language learning", "skill development", "corporate training", "early childhood", "k-12", "higher education", "certification", "coding bootcamp", "music education", "art education", "stem", "special needs", "adult learning", "vocational", "content creation", "student information", "lms", "learning management", "virtual classroom", "educational games", "tutoring", "study tools", "assessment", "career counseling", "scholarship", "educational financing", "research", "academic publishing"]
+    
+  media:
+    keywords: ["media", "entertainment", "streaming", "content creation", "social media", "gaming", "music", "video production", "podcast", "digital publishing", "news", "journalism", "sports", "event", "live streaming", "virtual events", "animation", "film", "photography", "audio", "broadcasting", "digital marketing", "influencer", "creator economy", "nft", "digital art", "virtual production", "interactive media", "documentary", "children's entertainment", "comedy", "performance arts"]
+    
+  agriculture:
+    keywords: ["agriculture", "farming", "agtech", "precision agriculture", "smart farming", "vertical farming", "hydroponics", "aeroponics", "agricultural drone", "crop monitoring", "livestock", "agricultural software", "farm management", "seed", "fertilizer", "pest control", "agricultural equipment", "food processing", "agricultural logistics", "commodity trading", "agricultural finance", "soil", "irrigation", "greenhouse", "aquaculture", "fish farming", "beekeeping", "organic farming", "sustainable agriculture", "agricultural biotech", "farm-to-table", "agricultural insurance", "rural"]
+    
+  fashion:
+    keywords: ["fashion", "beauty", "cosmetics", "personal care", "fashion design", "beauty tech", "virtual try-on", "sustainable fashion", "custom fashion", "fashion manufacturing", "textile", "fashion logistics", "beauty services", "hair care", "skincare", "makeup", "fragrance", "fashion retail", "styling", "fashion analytics", "fashion photography", "fashion marketing", "jewelry", "accessories", "fashion education", "beauty education", "circular fashion", "fashion rental"]
+    
+  sports:
+    keywords: ["sports", "fitness", "wearable", "sports analytics", "nutrition", "personal training", "sports equipment", "team management", "fan engagement", "sports betting", "athletic performance", "recovery", "sports medicine", "coaching", "sports broadcasting", "venue management", "event management", "sports marketing", "athlete management", "sports psychology", "youth sports", "outdoor recreation", "adventure sports", "water sports", "winter sports", "motorsports", "esports", "sports safety", "sports apparel", "sports nutrition"]
+    
+  travel:
+    keywords: ["travel", "hospitality", "hotel", "vacation rental", "travel planning", "tour", "restaurant", "event planning", "hospitality management", "travel insurance", "luggage", "transportation booking", "travel safety", "tourism", "adventure travel", "business travel", "cruise", "airport", "travel analytics", "destination marketing", "travel photography", "travel guide", "translation", "currency exchange", "travel gear", "sustainable tourism", "medical tourism", "educational travel", "luxury travel", "budget travel"]
+    
+  manufacturing:
+    keywords: ["manufacturing", "industrial", "production", "3d printing", "additive manufacturing", "robotics", "automation", "supply chain", "quality control", "predictive maintenance", "industrial design", "cad", "cam", "manufacturing execution", "inventory management", "production planning", "industrial safety", "materials science", "packaging", "assembly line", "lean manufacturing", "six sigma", "industrial analytics", "machine learning manufacturing", "digital factory", "industry 4.0", "chemical manufacturing", "pharmaceutical manufacturing", "electronics manufacturing", "automotive manufacturing", "aerospace manufacturing", "textile manufacturing", "food manufacturing"]
+    
+  security:
+    keywords: ["security", "cybersecurity", "physical security", "surveillance", "access control", "identity verification", "fraud prevention", "risk management", "emergency response", "disaster preparedness", "fire safety", "personal safety", "home security", "business security", "data protection", "privacy", "threat intelligence", "security analytics", "biometric", "encryption", "network security", "cloud security", "mobile security", "iot security", "security training", "compliance management", "incident response", "security consulting", "safety equipment", "workplace safety"]
+    
+  hr:
+    keywords: ["hr", "human resources", "recruitment", "talent management", "employee engagement", "performance management", "payroll", "benefits", "workplace analytics", "remote work", "collaboration", "communication", "project management", "time tracking", "freelancer", "gig economy", "workforce planning", "employee training", "diversity", "inclusion", "wellness", "mental health", "career development", "skills assessment", "background check", "employee feedback", "workplace safety", "office management", "facilities management", "corporate culture", "workflow", "transparency"]
+    
+  legal:
+    keywords: ["legal", "legaltech", "document management", "contract management", "legal research", "compliance", "regulatory", "intellectual property", "ip", "litigation", "legal analytics", "court", "law firm", "legal billing", "client management", "legal education", "legal marketing", "patent", "trademark", "immigration", "family law", "criminal justice", "corporate law", "tax law", "employment law", "real estate law", "healthcare law", "environmental law", "international law", "legal consulting"]
+    
+  government:
+    keywords: ["government", "govtech", "civic", "e-government", "public safety", "emergency services", "smart city", "municipal", "voting", "policy", "public transportation", "infrastructure", "citizen engagement", "government analytics", "digital identity", "tax", "social services", "public health", "environmental monitoring", "traffic management", "waste management", "water management", "energy management", "public records", "government communication", "public procurement", "budget management", "performance management", "transparency"]
+    
+  nonprofit:
+    keywords: ["nonprofit", "non-profit", "social impact", "charity", "fundraising", "volunteer", "grant", "impact measurement", "social innovation", "community", "activism", "environmental impact", "social justice", "education access", "healthcare access", "financial inclusion", "digital divide", "poverty", "disaster relief", "humanitarian", "development", "microfinance", "social enterprise", "b-corp", "sustainability reporting", "esg", "corporate social responsibility", "csr", "social entrepreneurship", "community development"]
+    
+  emerging:
+    keywords: ["space", "aerospace", "quantum", "nanotechnology", "biotech", "synthetic biology", "brain-computer interface", "bci", "longevity", "anti-aging", "cryonics", "life extension", "underwater", "weather modification", "geoengineering", "space mining", "asteroid", "seti", "exoplanet", "consciousness", "psychedelic", "nootropics", "cognitive enhancement", "regenerative medicine", "gene therapy", "stem cell", "3d bioprinting", "organ-on-chip", "personalized medicine", "precision medicine", "digital health twins", "synthetic media", "deepfake", "digital identity", "self-sovereign identity"]
+    
+  business_services:
+    keywords: ["business consulting", "management consulting", "strategy consulting", "technology consulting", "financial consulting", "marketing consulting", "operations consulting", "change management", "bpo", "business process outsourcing", "virtual assistant", "bookkeeping", "tax services", "legal services", "it services", "digital transformation", "data consulting", "analytics consulting", "business intelligence", "market research", "customer research", "competitive intelligence", "business development", "sales consulting", "customer success", "business coaching", "executive coaching", "leadership development", "team building", "organizational development"]
+    
+  creative:
+    keywords: ["graphic design", "web design", "ux", "ui", "product design", "industrial design", "interior design", "architectural design", "fashion design", "jewelry design", "logo design", "branding", "marketing design", "print design", "digital design", "motion graphics", "video production", "animation", "photography", "content creation", "creative writing", "copywriting", "technical writing", "translation", "interpretation", "voice-over", "music production", "sound design", "game design", "app design"]
