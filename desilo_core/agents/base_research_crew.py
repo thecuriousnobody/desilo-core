@@ -1,26 +1,26 @@
 """Base Research Crew for DeSilo Core
 
-This provides the foundation for all specialized research crews with
-reasoning capabilities and guardrails. White-label implementations
-extend this base class to create organization-specific research crews.
+This provides the foundation for all specialized research crews.
+White-label implementations extend this base class to create
+organization-specific research crews.
 """
 
 import os
+import re
 import logging
-from abc import abstractmethod
-from typing import Dict, Any, Tuple, List, Optional
+from abc import ABC, abstractmethod
+from typing import Dict, Any, List, Optional
 from pathlib import Path
+from datetime import datetime, timezone
 
 from crewai import LLM, Agent, Crew, Process, Task
-from crewai.project import CrewBase, agent, before_kickoff, crew, task
+from crewai_tools import SerperDevTool
 from dotenv import load_dotenv
-
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
 
-class BaseResearchCrew(CrewBase):
+class BaseResearchCrew(ABC):
     """Base class for all research crews with common functionality.
 
     This is a generic base class that can be extended by any organization.
@@ -34,10 +34,6 @@ class BaseResearchCrew(CrewBase):
     the geographic focus of local searches.
     """
 
-    # Config paths relative to crew file - override in subclasses
-    agents_config = 'config/agents.yaml'
-    tasks_config = 'config/tasks.yaml'
-
     def __init__(self, region: Optional[str] = None):
         """Initialize the research crew.
 
@@ -45,8 +41,6 @@ class BaseResearchCrew(CrewBase):
             region: Optional region for local searches. If not provided,
                    searches will be generic (no geographic focus).
         """
-        self.inputs = {}
-        self.request = None
         self._region = region
 
         # Load environment
@@ -55,8 +49,8 @@ class BaseResearchCrew(CrewBase):
         # Initialize LLM with reasoning capabilities
         self.llm = self._initialize_llm()
 
-        # Initialize search tools
-        self.search_tools = self._initialize_search_tools()
+        # Initialize search tool
+        self.search_tool = self._initialize_search_tool()
 
     def get_region(self) -> Optional[str]:
         """Get the region for local searches.
@@ -71,7 +65,6 @@ class BaseResearchCrew(CrewBase):
 
     def _load_environment(self):
         """Load environment variables"""
-        # Try common paths
         env_paths = [
             Path('.env'),
             Path('.env.production'),
@@ -84,7 +77,7 @@ class BaseResearchCrew(CrewBase):
                 logger.info(f"Loaded environment from {env_path}")
                 break
 
-    def _initialize_llm(self):
+    def _initialize_llm(self) -> LLM:
         """Initialize LLM with appropriate settings"""
         return LLM(
             api_key=os.getenv("ANTHROPIC_API_KEY"),
@@ -94,103 +87,64 @@ class BaseResearchCrew(CrewBase):
             timeout=300
         )
 
-    def _initialize_search_tools(self):
-        """Initialize search tools using SerperDev"""
-        from crewai_tools import SerperDevTool
-        from crewai.tools import tool
-
-        # Initialize SerperDev
-        serper = SerperDevTool(api_key=os.getenv("SERPER_API_KEY"))
-
-        # Capture region for closure
-        region = self.get_region()
-
-        @tool("Search the web for information")
-        def web_search(search_query: str) -> str:
-            """Search the web for current information"""
-            return serper.run(search_query)
-
-        @tool("Search for local resources")
-        def local_search(search_query: str) -> str:
-            """Search specifically for local/regional resources"""
-            if region:
-                query = f"{region} {search_query}"
-            else:
-                query = search_query
-            return serper.run(query)
-
-        @tool("Search for industry insights")
-        def industry_search(search_query: str) -> str:
-            """Search for industry-specific insights and trends"""
-            query = f"industry analysis trends {search_query}"
-            return serper.run(query)
-
-        return {
-            "web_search": web_search,
-            "local_search": local_search,
-            "industry_search": industry_search
-        }
-
-    @before_kickoff
-    def prepare_inputs(self, inputs):
-        """Prepare inputs before crew execution"""
-        if 'request' not in inputs:
-            raise ValueError("Request is required in inputs")
-
-        self.request = inputs['request']
-        self.inputs = inputs
-        return inputs
-
-    def validate_output(self, result: Any, expected_structure: Dict[str, type]) -> Tuple[bool, str]:
-        """Validate output against expected structure
-
-        This is a guardrail to ensure output quality.
-        """
-        try:
-            result_str = str(result)
-
-            # Check for required keys in the output
-            missing_keys = []
-            for key, expected_type in expected_structure.items():
-                if key not in result_str:
-                    missing_keys.append(key)
-
-            if missing_keys:
-                return (False, f"Missing required sections: {', '.join(missing_keys)}")
-
-            return (True, result_str)
-
-        except Exception as e:
-            logger.error(f"Validation error: {e}")
-            return (False, f"Validation failed: {str(e)}")
+    def _initialize_search_tool(self) -> SerperDevTool:
+        """Initialize SerperDev search tool"""
+        return SerperDevTool(api_key=os.getenv("SERPER_API_KEY"))
 
     @abstractmethod
-    def get_research_agents(self) -> List[Agent]:
-        """Get the list of agents for this research type
+    def get_agents(self) -> List[Agent]:
+        """Get the list of agents for this research crew.
 
         Each specialized crew must implement this.
         """
         pass
 
     @abstractmethod
-    def get_research_tasks(self) -> List[Task]:
-        """Get the list of tasks for this research type
+    def get_tasks(self, **kwargs) -> List[Task]:
+        """Get the list of tasks for this research crew.
 
         Each specialized crew must implement this.
+
+        Args:
+            **kwargs: Task-specific parameters (e.g., search_terms, user_message)
         """
         pass
 
-    @crew
-    def crew(self) -> Crew:
+    def create_crew(self) -> Crew:
         """Create the crew with all agents and tasks"""
         return Crew(
-            agents=self.get_research_agents(),
-            tasks=self.get_research_tasks(),
-            verbose=True,
-            process=Process.sequential,
-            max_retry_attempts=3,
-            retry_wait_time=5
+            agents=self.get_agents(),
+            tasks=self.get_tasks(),
+            verbose=False,
+            process=Process.sequential
         )
+
+    def run(self, **kwargs) -> Dict[str, Any]:
+        """Execute the research crew.
+
+        Args:
+            **kwargs: Parameters passed to get_tasks()
+
+        Returns:
+            Processed results dictionary
+        """
+        try:
+            crew = Crew(
+                agents=self.get_agents(),
+                tasks=self.get_tasks(**kwargs),
+                verbose=False,
+                process=Process.sequential
+            )
+
+            result = crew.kickoff()
+            return self.process_output(result)
+
+        except Exception as e:
+            logger.error(f"Crew execution error: {e}")
+            return {
+                "status": "error",
+                "message": str(e)
+            }
 
     def process_output(self, output) -> Dict[str, Any]:
         """Process crew output into structured format"""
@@ -201,14 +155,14 @@ class BaseResearchCrew(CrewBase):
             }
 
         try:
-            # Extract structured data from output
-            result = self._extract_structured_data(str(output))
+            output_str = str(output)
+            result = self._extract_structured_data(output_str)
 
             return {
                 "status": "success",
                 "data": result,
                 "confidence": self._calculate_confidence(result),
-                "sources": self._extract_sources(str(output))
+                "sources": self._extract_sources(output_str)
             }
 
         except Exception as e:
@@ -219,21 +173,17 @@ class BaseResearchCrew(CrewBase):
             }
 
     def _extract_structured_data(self, output: str) -> Dict[str, Any]:
-        """Extract structured data from crew output
+        """Extract structured data from crew output.
 
         Override in specialized crews for custom extraction.
         """
-        # Default implementation
         return {
             "raw_output": output,
-            "extracted_at": str(datetime.utcnow())
+            "extracted_at": datetime.now(timezone.utc).isoformat()
         }
 
     def _calculate_confidence(self, result: Dict[str, Any]) -> float:
-        """Calculate confidence score for the results
-
-        Based on completeness and quality of data.
-        """
+        """Calculate confidence score for the results."""
         confidence = 0.5
 
         if result.get("raw_output"):
@@ -245,10 +195,8 @@ class BaseResearchCrew(CrewBase):
         return min(confidence, 1.0)
 
     def _extract_sources(self, output: str) -> List[Dict[str, str]]:
-        """Extract sources from the output"""
+        """Extract sources/URLs from the output"""
         sources = []
-
-        import re
         url_pattern = r'https?://[^\s<>"{}|\\^\[\]`]+'
         urls = re.findall(url_pattern, output)
 
