@@ -16,6 +16,7 @@ class ConversationStyle:
     max_sentences_per_response: int = 2
     tone: str = "professional"  # "professional", "casual", "friendly"
     energy: str = "warm"  # "warm", "energetic", "calm"
+    directness: str = "honest"  # "honest", "diplomatic", "blunt"
 
 
 @dataclass
