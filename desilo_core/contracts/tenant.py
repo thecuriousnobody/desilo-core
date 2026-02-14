@@ -38,6 +38,7 @@ class FeatureFlags:
     enable_calendar_optimizer: bool = False
     enable_civic_solver: bool = False
     enable_email_resources: bool = False
+    enable_workflow_approval: bool = True
 
 
 @dataclass
