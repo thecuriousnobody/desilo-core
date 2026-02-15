@@ -22,24 +22,32 @@ claude
 
 Claude reads `CLAUDE.md` automatically when it starts in the project directory.
 
-### Superpowers Plugin
+### Claude Code's Built-In Planning Mode
 
-Superpowers adds structured, automated workflows to Claude Code — TDD enforcement, systematic debugging, planning, parallel agents, and code review. Once installed, these activate automatically.
+Claude Code has a built-in plan mode for non-trivial work. It explores the codebase, considers trade-offs, presents an approach, and waits for your approval before writing code. **This is the strategic layer** — use it for architecture decisions, new features, and anything where the approach isn't obvious. It's one of Claude's strongest capabilities.
 
+### Superpowers Plugin (Execution Discipline)
+
+Superpowers is a **complementary** layer that adds discipline during the *execution* phase — after you've approved a plan. It does NOT replace Claude's planning mode.
+
+| Layer | What It Handles |
+|-------|----------------|
+| **Claude's Plan Mode** | Strategy — *what* to build, *which* approach, *where* it fits |
+| **Superpowers** | Execution — *how* to write the code safely (TDD, verify, review) |
+
+**Install:**
 ```
 # Inside Claude Code, run these two commands:
 /plugin marketplace add obra/superpowers-marketplace
 /plugin install superpowers@superpowers-marketplace
 ```
 
-Key skills it provides:
+Key execution skills:
 
 | Skill | What It Does |
 |-------|-------------|
-| **test-driven-development** | Enforces red-green-refactor — writes failing test first, then implementation |
+| **test-driven-development** | Enforces red-green-refactor — failing test first, then implementation |
 | **systematic-debugging** | Four-phase root cause investigation instead of guessing |
-| **brainstorming** | Explores design alternatives through questioning before coding |
-| **writing-plans** | Breaks work into small tasks with exact file paths and verification steps |
 | **subagent-driven-development** | Dispatches parallel agents with two-stage code review |
 | **verification-before-completion** | Confirms fixes work before declaring success |
 
