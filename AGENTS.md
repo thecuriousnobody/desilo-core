@@ -158,6 +158,81 @@ Update `pyproject.toml` for any new dependencies — not a requirements.txt.
 
 ---
 
+## Cross-Repo Workflow: core ↔ distillery
+
+desilo-distillery (and future white labels) depend on this package. Changes here have downstream impact. Here's how the two repos coordinate.
+
+### How code flows from distillery to core
+
+Sometimes generic code gets written in distillery first (it's the live app, things move fast). When someone notices it belongs in core, this is the process:
+
+```
+1. Identify generic code in distillery (passes the Austin Test)
+   │
+2. Implement in core (on a branch)
+   │  - Add the utility/module to desilo_core/
+   │  - Include tests in tests/
+   │  - Run the Austin Test
+   │  - Bump version in pyproject.toml and __init__.py
+   │
+3. Create PR in this repo
+   │  - Tag Nachi as reviewer
+   │  - Reference the distillery use case
+   │
+4. PR reviewed and merged to main
+   │
+5. Distillery updates to use the core version
+   │  - pip install desilo-core (gets latest)
+   │  - Replace local implementation with core import
+   │  - Run distillery tests
+```
+
+### Who can merge
+
+- **Additive changes** (new utilities, new modules, new contracts): Any team member can self-merge after a quick self-review. Nachi reviews async.
+- **Changes to existing contracts or APIs**: Wait for Nachi's review before merging. These affect all downstream consumers.
+
+### How distillery consumes this package
+
+Distillery's `requirements.txt` installs from GitHub main:
+```
+desilo-core @ git+https://github.com/thecuriousnobody/desilo-core.git@main
+```
+
+Every Railway deploy gets the latest core main. As the package stabilizes, distillery will pin to version tags (e.g., `@v0.2.0`) for predictable deploys.
+
+### Testing your changes against distillery
+
+Before merging a core PR, verify it doesn't break the live app:
+
+```bash
+# In distillery's backend venv
+cd /path/to/desilo-distillery/railway-backend
+source venv/bin/activate
+pip install -e /path/to/desilo-core
+
+# Run distillery tests
+python -m pytest tests/ -v
+
+# Smoke test the backend
+python main.py
+```
+
+If distillery's tests and backend work with your core changes, you're good.
+
+### What belongs in core vs distillery
+
+| Core (generic, Austin Test passes) | Distillery (partner-specific) |
+|-----------------------------------|-----------------------------|
+| Date filtering utilities | Sarah Martinez persona |
+| Base research crew patterns | ESO account lists and config |
+| Search adapter interfaces | Central Illinois resource data |
+| Event extraction helpers | Media brief recipient lists |
+| Industry taxonomy | Firebase project credentials |
+| Prompt templates (generic) | Neon database connection strings |
+
+---
+
 ## Workflow Standards
 
 ### Branch First
