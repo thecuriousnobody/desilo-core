@@ -22,6 +22,31 @@ claude
 
 Claude reads `CLAUDE.md` automatically when it starts in the project directory.
 
+### Superpowers Plugin
+
+Superpowers adds structured, automated workflows to Claude Code — TDD enforcement, systematic debugging, planning, parallel agents, and code review. Once installed, these activate automatically.
+
+```
+# Inside Claude Code, run these two commands:
+/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace
+```
+
+Key skills it provides:
+
+| Skill | What It Does |
+|-------|-------------|
+| **test-driven-development** | Enforces red-green-refactor — writes failing test first, then implementation |
+| **systematic-debugging** | Four-phase root cause investigation instead of guessing |
+| **brainstorming** | Explores design alternatives through questioning before coding |
+| **writing-plans** | Breaks work into small tasks with exact file paths and verification steps |
+| **subagent-driven-development** | Dispatches parallel agents with two-stage code review |
+| **verification-before-completion** | Confirms fixes work before declaring success |
+
+This is especially important for core — TDD and verification help prevent breaking changes to contracts and downstream consumers. Everyone on the team should install this plugin.
+
+Repo: https://github.com/obra/superpowers
+
 ### Python Environment
 
 ```bash
