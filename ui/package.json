@@ -1,0 +1,11 @@
+{
+  "name": "@desilo/core-ui",
+  "version": "0.3.0",
+  "description": "DeSilo Core UI components - calendar events, event parsing, and base rendering",
+  "main": "components/index.ts",
+  "types": "components/index.ts",
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "license": "MIT"
+}

@@ -14,6 +14,7 @@ from .search import SearchAdapter, SearchResult
 from .resources import ResourceConnector, Resource
 from .knowledge import KnowledgeBase, Insight
 from .tenant import TenantConfig
+from .events import EventStore, ScrapedEvent
 
 __all__ = [
     'AgentPersona',
@@ -24,4 +25,6 @@ __all__ = [
     'KnowledgeBase',
     'Insight',
     'TenantConfig',
+    'EventStore',
+    'ScrapedEvent',
 ]
