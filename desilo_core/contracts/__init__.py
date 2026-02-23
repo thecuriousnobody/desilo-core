@@ -14,6 +14,11 @@ from .search import SearchAdapter, SearchResult
 from .resources import ResourceConnector, Resource
 from .knowledge import KnowledgeBase, Insight
 from .tenant import TenantConfig
+from .workflow import (
+    WorkflowOrchestrator, StartupContextStore,
+    WorkflowState, WorkflowPhase, StartupContext,
+    ResearchPlan, ResearchPlanStep, ClarifyingQuestion,
+)
 
 __all__ = [
     'AgentPersona',
@@ -24,4 +29,12 @@ __all__ = [
     'KnowledgeBase',
     'Insight',
     'TenantConfig',
+    'WorkflowOrchestrator',
+    'StartupContextStore',
+    'WorkflowState',
+    'WorkflowPhase',
+    'StartupContext',
+    'ResearchPlan',
+    'ResearchPlanStep',
+    'ClarifyingQuestion',
 ]
