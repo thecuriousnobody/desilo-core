@@ -19,3 +19,6 @@ desilo_core/contracts/search.py
 desilo_core/contracts/tenant.py
 desilo_core/memory/__init__.py
 desilo_core/memory/collaborative_memory.py
+desilo_core/utils/__init__.py
+desilo_core/utils/date_filtering.py
+tests/test_date_filtering.py
