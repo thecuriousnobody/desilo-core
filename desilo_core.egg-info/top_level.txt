@@ -1,2 +1,0 @@
-config
-desilo_core
