@@ -1,0 +1,310 @@
+# Coding Agent Standards — DeSilo Core
+
+How we use AI coding agents when working on the core library. This is a shared, generic package — extra care is required since changes affect all downstream white-label implementations.
+
+---
+
+## Setup
+
+### Claude Code
+
+```bash
+# Install
+npm install -g @anthropic-ai/claude-code
+
+# Or native installer (macOS/Linux)
+curl -fsSL https://claude.ai/install.sh | bash
+
+# Launch in this project
+cd /path/to/desilo-core
+claude
+```
+
+Claude reads `CLAUDE.md` automatically when it starts in the project directory.
+
+### Claude Code's Built-In Planning Mode
+
+Claude Code has a built-in plan mode for non-trivial work. It explores the codebase, considers trade-offs, presents an approach, and waits for your approval before writing code. **This is the strategic layer** — use it for architecture decisions, new features, and anything where the approach isn't obvious. It's one of Claude's strongest capabilities.
+
+### Superpowers Plugin (Execution Discipline)
+
+Superpowers is a **complementary** layer that adds discipline during the *execution* phase — after you've approved a plan. It does NOT replace Claude's planning mode.
+
+| Layer | What It Handles |
+|-------|----------------|
+| **Claude's Plan Mode** | Strategy — *what* to build, *which* approach, *where* it fits |
+| **Superpowers** | Execution — *how* to write the code safely (TDD, verify, review) |
+
+**Install:**
+```
+# Inside Claude Code, run these two commands:
+/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace
+```
+
+Key execution skills:
+
+| Skill | What It Does |
+|-------|-------------|
+| **test-driven-development** | Enforces red-green-refactor — failing test first, then implementation |
+| **systematic-debugging** | Four-phase root cause investigation instead of guessing |
+| **subagent-driven-development** | Dispatches parallel agents with two-stage code review |
+| **verification-before-completion** | Confirms fixes work before declaring success |
+
+This is especially important for core — TDD and verification help prevent breaking changes to contracts and downstream consumers. Everyone on the team should install this plugin.
+
+Repo: https://github.com/obra/superpowers
+
+### Python Environment
+
+```bash
+# Create a virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install in editable mode with dev deps
+pip install -e ".[dev]"
+```
+
+### Testing Against desilo-distillery Locally
+
+When you change something in core, test it against the distillery app without pushing:
+
+```bash
+# In the distillery backend's venv
+cd /path/to/desilo-distillery/railway-backend
+source venv/bin/activate
+
+# Install your local core (overrides the GitHub version)
+pip install -e /path/to/desilo-core
+
+# Start the backend — it now uses your local core changes
+python main.py
+```
+
+Any edits to desilo-core files are reflected immediately (that's what `-e` does). No reinstall needed between changes.
+
+**Note:** Running `pip install -r requirements.txt` in distillery will reinstall core from GitHub and overwrite your local link. Just re-run `pip install -e /path/to/desilo-core` to switch back.
+
+---
+
+## Rules for This Repo
+
+### 1. The Austin Test — Non-Negotiable
+
+Every file must be usable by any organization anywhere. Before committing, run:
+
+```bash
+grep -rE "Distillery|Peoria|Sarah|Central Illinois" desilo_core/
+```
+
+**Zero matches.** If your code references anything partner-specific, it belongs in desilo-distillery, not here.
+
+### 2. Contracts Are Stable
+
+The ABCs in `desilo_core/contracts/` are a public API that downstream packages depend on.
+
+**Safe changes:**
+- Adding a new method with a default implementation
+- Adding a new contract class
+- Fixing bugs in default method implementations
+
+**Breaking changes (require major version bump + team discussion):**
+- Changing an abstract method signature
+- Removing an abstract method
+- Renaming a contract class
+- Changing the inheritance hierarchy
+
+Always tell Claude about this constraint:
+> "The contracts in contracts/ are stable APIs. Don't change existing abstract method signatures."
+
+### 3. Write Tests
+
+This library has `pytest` configured. Every new feature or bug fix should include tests:
+
+```bash
+# Run all tests
+pytest
+
+# Run with verbose output
+pytest -v
+
+# Run a specific test file
+pytest tests/test_contracts.py
+```
+
+Tests go in a `tests/` directory at the repo root. Mirror the package structure:
+```
+tests/
+├── test_contracts/
+│   ├── test_agent.py
+│   ├── test_search.py
+│   └── ...
+├── test_agents/
+│   ├── test_base_research_crew.py
+│   └── ...
+└── test_memory/
+    └── test_collaborative_memory.py
+```
+
+### 4. Keep Dependencies Minimal
+
+This is a library, not an application. Every dependency you add becomes a dependency for all downstream consumers. Before adding a new package:
+- Is it already covered by an existing dependency?
+- Can the functionality be achieved with the standard library?
+- Is it a well-maintained, stable package?
+
+Update `pyproject.toml` for any new dependencies — not a requirements.txt.
+
+---
+
+## Cross-Repo Workflow: core ↔ distillery
+
+desilo-distillery (and future white labels) depend on this package. Changes here have downstream impact. Here's how the two repos coordinate.
+
+### How code flows from distillery to core
+
+Sometimes generic code gets written in distillery first (it's the live app, things move fast). When someone notices it belongs in core, this is the process:
+
+```
+1. Identify generic code in distillery (passes the Austin Test)
+   │
+2. Implement in core (on a branch)
+   │  - Add the utility/module to desilo_core/
+   │  - Include tests in tests/
+   │  - Run the Austin Test
+   │  - Bump version in pyproject.toml and __init__.py
+   │
+3. Create PR in this repo
+   │  - Tag Nachi as reviewer
+   │  - Reference the distillery use case
+   │
+4. PR reviewed and merged to main
+   │
+5. Distillery updates to use the core version
+   │  - pip install desilo-core (gets latest)
+   │  - Replace local implementation with core import
+   │  - Run distillery tests
+```
+
+### Who can merge
+
+- **Additive changes** (new utilities, new modules, new contracts): Any team member can self-merge after a quick self-review. Nachi reviews async.
+- **Changes to existing contracts or APIs**: Wait for Nachi's review before merging. These affect all downstream consumers.
+
+### How distillery consumes this package
+
+Distillery's `requirements.txt` installs from GitHub main:
+```
+desilo-core @ git+https://github.com/thecuriousnobody/desilo-core.git@main
+```
+
+Every Railway deploy gets the latest core main. As the package stabilizes, distillery will pin to version tags (e.g., `@v0.2.0`) for predictable deploys.
+
+### Testing your changes against distillery
+
+Before merging a core PR, verify it doesn't break the live app:
+
+```bash
+# In distillery's backend venv
+cd /path/to/desilo-distillery/railway-backend
+source venv/bin/activate
+pip install -e /path/to/desilo-core
+
+# Run distillery tests
+python -m pytest tests/ -v
+
+# Smoke test the backend
+python main.py
+```
+
+If distillery's tests and backend work with your core changes, you're good.
+
+### What belongs in core vs distillery
+
+| Core (generic, Austin Test passes) | Distillery (partner-specific) |
+|-----------------------------------|-----------------------------|
+| Date filtering utilities | Sarah Martinez persona |
+| Base research crew patterns | ESO account lists and config |
+| Search adapter interfaces | Central Illinois resource data |
+| Event extraction helpers | Media brief recipient lists |
+| Industry taxonomy | Firebase project credentials |
+| Prompt templates (generic) | Neon database connection strings |
+
+---
+
+## Workflow Standards
+
+### Branch First
+
+```bash
+git checkout -b feat/your-feature-name
+# Work with Claude
+# Push and create a PR
+```
+
+### Git Conventions
+
+```
+feat/short-description     — New features
+fix/short-description      — Bug fixes
+chore/short-description    — Maintenance, config, docs
+```
+
+Commit messages:
+```
+feat: Add SerperSearchAdapter implementation
+fix: Handle empty results in BaseResearchCrew
+chore: Update pytest config for async tests
+```
+
+### Review AI-Generated Code
+
+Before committing, check:
+- [ ] Does it pass the Austin Test? (no partner-specific references)
+- [ ] Does it maintain contract stability? (no broken ABCs)
+- [ ] Are there tests for the change?
+- [ ] Are the imports clean? (no unnecessary new dependencies)
+- [ ] Does it follow existing patterns in the codebase?
+
+### Version Bumps
+
+When making changes, update `__version__` in `desilo_core/__init__.py` and `version` in `pyproject.toml`:
+- **Patch** (0.1.0 → 0.1.1): Bug fixes, docs, non-breaking tweaks
+- **Minor** (0.1.0 → 0.2.0): New features, new contracts, new adapters
+- **Major** (0.1.0 → 1.0.0): Breaking changes to contracts or public API
+
+---
+
+## Common Claude Code Commands
+
+| Command | What It Does |
+|---------|-------------|
+| `claude` | Start interactive session |
+| `claude "task"` | One-shot task |
+| `claude -c` | Continue last conversation |
+| `/help` | Show available commands |
+
+### Useful Patterns
+
+```bash
+# Quick Austin Test
+claude "run the Austin Test — grep for any partner-specific references in desilo_core/"
+
+# Explore contracts
+claude "explain how AgentPersona is implemented and what methods a white label needs to provide"
+
+# Add a new adapter
+claude "add a SerperSearchAdapter in desilo_core/adapters/ that implements the SearchAdapter contract"
+```
+
+---
+
+## What NOT to Do
+
+- **Don't add partner-specific code** — that's what desilo-distillery is for
+- **Don't break contract signatures** — downstream packages depend on them
+- **Don't add heavy dependencies** — keep the library lightweight
+- **Don't skip tests** — this is shared infrastructure, it needs to be reliable
+- **Don't push directly to main** — use branches and PRs
+- **Don't forget to test against distillery** — `pip install -e` and verify the app still works
